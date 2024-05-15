@@ -1,47 +1,28 @@
-import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Variable } from "../../style/Variable";
+import { useNavigate } from "react-router-dom";
 
-export const Nav = () => {
+export const NavDestop = () => {
     const navigate = useNavigate();
 
     const changePage = (pageName: string) => {
         navigate(pageName);
     };
 
-    const location = useLocation();
-
     // 네이버게이션 몇번째인지
-    const selectedOrder = () => {
-        if (location.pathname === "/") {
+    const selectOrder = () => {
+        if (location.pathname === "/calendar") {
             return 0;
-        } else if (location.pathname === "/calendar") {
-            return 1;
         } else if (location.pathname === "/category") {
-            return 2;
+            return 1;
         } else if (location.pathname === "/setting") {
-            return 3;
+            return 2;
         }
-        return -1;
+        return 0;
     };
 
     return (
-        <Navigation selectedLocation={selectedOrder()}>
-            <NavMenu onClick={() => changePage("/")} selected={location.pathname === "/"}>
-                <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M4 10.5C3.17 10.5 2.5 11.17 2.5 12C2.5 12.83 3.17 13.5 4 13.5C4.83 13.5 5.5 12.83 5.5 12C5.5 11.17 4.83 10.5 4 10.5ZM4 4.5C3.17 4.5 2.5 5.17 2.5 6C2.5 6.83 3.17 7.5 4 7.5C4.83 7.5 5.5 6.83 5.5 6C5.5 5.17 4.83 4.5 4 4.5ZM4 16.5C3.17 16.5 2.5 17.18 2.5 18C2.5 18.82 3.18 19.5 4 19.5C4.82 19.5 5.5 18.82 5.5 18C5.5 17.18 4.83 16.5 4 16.5ZM8 19H20C20.55 19 21 18.55 21 18C21 17.45 20.55 17 20 17H8C7.45 17 7 17.45 7 18C7 18.55 7.45 19 8 19ZM8 13H20C20.55 13 21 12.55 21 12C21 11.45 20.55 11 20 11H8C7.45 11 7 11.45 7 12C7 12.55 7.45 13 8 13ZM7 6C7 6.55 7.45 7 8 7H20C20.55 7 21 6.55 21 6C21 5.45 20.55 5 20 5H8C7.45 5 7 5.45 7 6Z"
-                        fill="currentColor"
-                    />
-                </svg>
-                <p>할일</p>
-            </NavMenu>
+        <Navigation $selectedLocation={selectOrder()}>
             <NavMenu
                 onClick={() => changePage("/calendar")}
                 selected={location.pathname === "/calendar"}
@@ -58,9 +39,8 @@ export const Nav = () => {
                         fill="currentColor"
                     />
                 </svg>
-                <p>달력</p>
+                <p>달력으로 보기</p>
             </NavMenu>
-            <PlusButton></PlusButton>
             <NavMenu
                 onClick={() => changePage("/category")}
                 selected={location.pathname === "/category"}
@@ -77,7 +57,7 @@ export const Nav = () => {
                         fill="currentColor"
                     />
                 </svg>
-                <p>카테고리</p>
+                <p>카테고리으로 보기</p>
             </NavMenu>
             <NavMenu
                 onClick={() => changePage("/setting")}
@@ -103,7 +83,7 @@ export const Nav = () => {
 };
 
 type NavigationPropsType = {
-    selectedLocation: number;
+    $selectedLocation: number;
 };
 
 const Navigation = styled.nav<NavigationPropsType>`
@@ -121,11 +101,9 @@ const Navigation = styled.nav<NavigationPropsType>`
         position: absolute;
         top: -1px;
         ${(props) =>
-            props.selectedLocation === 0 || props.selectedLocation === 1
-                ? `left: calc((100vw - 4rem) / 4 * ${props.selectedLocation})`
-                : `left: calc((100vw - 4rem) / 4 * ${props.selectedLocation} + 4rem)`}; // 빨간색 선이 위치할 곳
+            `left: calc((100% / 3) * ${props.$selectedLocation})`}; // 빨간색 선이 위치할 곳
 
-        width: calc((100vw - 4rem) / 4); // 버튼 하나가 차지하는 가로 크기
+        width: calc(100% / 3); // 버튼 하나가 차지하는 가로 크기
         height: 1px;
         background-color: ${Variable.navSelectedColor};
 
@@ -139,56 +117,16 @@ type NavMenuPropsType = {
 
 const NavMenu = styled.nav<NavMenuPropsType>`
     display: flex;
-    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: 170px;
+    gap: 12px;
+    justify-content: center;
     align-items: center;
     min-width: 64px;
     font-size: 16px;
     color: ${(props) => (props.selected ? Variable.navSelectedColor : Variable.navDefaultColor)};
-    flex-grow: 1;
-    flex-basis: 62px;
+
     cursor: pointer;
 
     transition: color 0.2s;
-`;
-
-const PlusButton = styled.div`
-    flex-grow: 0;
-    flex-shrink: 0;
-    position: relative;
-    top: -50%;
-    width: 4rem;
-    height: 4rem;
-    background-color: ${Variable.primaryColor};
-    border-radius: 100%;
-    transition: transform 0.3s;
-    cursor: pointer;
-    z-index: 1;
-
-    &:hover {
-        transform: scale(120%);
-    }
-
-    &::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 16px;
-        height: 2px;
-        background-color: #f0f5f8;
-        transform: translate(-50%, -50%);
-        border-radius: 16px;
-    }
-
-    &::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 2px;
-        height: 16px;
-        background-color: #f0f5f8;
-        transform: translate(-50%, -50%);
-        border-radius: 16px;
-    }
 `;
