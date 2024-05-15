@@ -1,7 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Variable } from "../../style/Variable";
-import { useEffect } from "react";
 
 export const Nav = () => {
     const navigate = useNavigate();
@@ -114,18 +113,19 @@ const Navigation = styled.nav<NavigationPropsType>`
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    height: 50px;
+    height: 60px;
+    border-top: 1px solid #ebebeb;
 
     &::after {
         content: "";
         position: absolute;
-        top: 0px;
+        top: -1px;
         ${(props) =>
             props.selectedLocation === 0 || props.selectedLocation === 1
-                ? `left: calc((100vw - 50px) / 4 * ${props.selectedLocation})`
-                : `left: calc((100vw - 50px) / 4 * ${props.selectedLocation} + 50px)`}; // 빨간색 선이 위치할 곳
+                ? `left: calc((100vw - 4rem) / 4 * ${props.selectedLocation})`
+                : `left: calc((100vw - 4rem) / 4 * ${props.selectedLocation} + 4rem)`}; // 빨간색 선이 위치할 곳
 
-        width: calc((100vw - 50px) / 4); // 버튼 하나가 차지하는 가로 크기
+        width: calc((100vw - 4rem) / 4); // 버튼 하나가 차지하는 가로 크기
         height: 1px;
         background-color: ${Variable.navSelectedColor};
 
@@ -152,6 +152,43 @@ const NavMenu = styled.nav<NavMenuPropsType>`
 `;
 
 const PlusButton = styled.div`
-    width: 50px;
-    height: 50px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    position: relative;
+    top: -50%;
+    width: 4rem;
+    height: 4rem;
+    background-color: ${Variable.primaryColor};
+    border-radius: 100%;
+    transition: transform 0.3s;
+    cursor: pointer;
+    z-index: 1;
+
+    &:hover {
+        transform: scale(120%);
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 16px;
+        height: 2px;
+        background-color: #f0f5f8;
+        transform: translate(-50%, -50%);
+        border-radius: 16px;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 2px;
+        height: 16px;
+        background-color: #f0f5f8;
+        transform: translate(-50%, -50%);
+        border-radius: 16px;
+    }
 `;
