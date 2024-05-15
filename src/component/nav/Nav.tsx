@@ -12,8 +12,22 @@ export const Nav = () => {
 
     const location = useLocation();
 
+    // 네이버게이션 몇번째인지
+    const selectedOrder = () => {
+        if (location.pathname === "/") {
+            return 0;
+        } else if (location.pathname === "/calendar") {
+            return 1;
+        } else if (location.pathname === "/category") {
+            return 2;
+        } else if (location.pathname === "/setting") {
+            return 3;
+        }
+        return -1;
+    };
+
     return (
-        <Navigation>
+        <Navigation selectedLocation={selectedOrder()}>
             <NavMenu onClick={() => changePage("/")} selected={location.pathname === "/"}>
                 <svg
                     width="24"
@@ -47,7 +61,7 @@ export const Nav = () => {
                 </svg>
                 <p>달력</p>
             </NavMenu>
-            <div></div>
+            <PlusButton></PlusButton>
             <NavMenu
                 onClick={() => changePage("/category")}
                 selected={location.pathname === "/category"}
@@ -89,12 +103,34 @@ export const Nav = () => {
     );
 };
 
-const Navigation = styled.nav`
+type NavigationPropsType = {
+    selectedLocation: number;
+};
+
+const Navigation = styled.nav<NavigationPropsType>`
     position: absolute;
     bottom: 0;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
+    height: 50px;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0px;
+        ${(props) =>
+            props.selectedLocation === 0 || props.selectedLocation === 1
+                ? `left: calc((100vw - 50px) / 4 * ${props.selectedLocation})`
+                : `left: calc((100vw - 50px) / 4 * ${props.selectedLocation} + 50px)`}; // 빨간색 선이 위치할 곳
+
+        width: calc((100vw - 50px) / 4); // 버튼 하나가 차지하는 가로 크기
+        height: 1px;
+        background-color: ${Variable.navSelectedColor};
+
+        transition: left 0.3s; // 빨간색 선 트랜지션
+    }
 `;
 
 type NavMenuPropsType = {
@@ -105,8 +141,17 @@ const NavMenu = styled.nav<NavMenuPropsType>`
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 64px;
+    min-width: 64px;
     font-size: 16px;
+    color: ${(props) => (props.selected ? Variable.navSelectedColor : Variable.navDefaultColor)};
+    flex-grow: 1;
+    flex-basis: 62px;
+    cursor: pointer;
 
-    color: ${(props) => (props.selected ? "#F83939" : Variable.navDefaultColor)};
+    transition: color 0.2s;
+`;
+
+const PlusButton = styled.div`
+    width: 50px;
+    height: 50px;
 `;
