@@ -3,7 +3,12 @@ import { variable } from "../../style/variable";
 import { LoginTop } from "../../component/login/LoginTop";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { User, signInWithEmailAndPassword } from "firebase/auth";
+import {
+    GoogleAuthProvider,
+    User,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+} from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { auth } from "../../firebase/firebase";
 import { useEffect, useState } from "react";
@@ -37,6 +42,20 @@ export const Login = () => {
         }
     };
 
+    // 구글 소셜 로그인
+    const onGooleLogin = async () => {
+        try {
+            setErrorMessage("");
+            setLoading(true);
+            const provider = new GoogleAuthProvider();
+            await signInWithPopup(auth, provider);
+            navigate("/setting");
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    // 이미 로그인 된 사용자는 들어올 수 없도록 돌려보낸다.
     const [, setLogin] = useState<User | null>(null);
 
     useEffect(() => {
@@ -47,7 +66,7 @@ export const Login = () => {
     }, []);
 
     return (
-        <div>
+        <>
             <LoginTop text="로그인" />
             <Middle>
                 <EmailForm
@@ -116,15 +135,20 @@ export const Login = () => {
                             "로그인"
                         )}
                     </ContinueButton>
-                    <SignUpText onClick={() => navigate("/signup")}>회원가입하러 가기</SignUpText>
                 </EmailForm>
+                <GoogleLogin onClick={onGooleLogin}>
+                    <img src="/img/google.png" width="24px" /> 구글로 로그인
+                </GoogleLogin>
+                <SignUpText onClick={() => navigate("/signup")}>회원가입하러 가기</SignUpText>
             </Middle>
-        </div>
+        </>
     );
 };
 
 export const Middle = styled.div`
+    margin: auto;
     padding: 25px;
+    max-width: 1024px;
 `;
 
 const EmailForm = styled.form`
@@ -165,6 +189,19 @@ const ContinueButton = styled.button`
     background-color: ${variable.buttonReadyBackgroundColor};
     border-radius: 6px;
     border: none;
+    cursor: pointer;
+`;
+
+const GoogleLogin = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 50px;
+    padding: 14px;
+    font-size: 16px;
+    border: 1px solid ${variable.borderDefaultColor};
+    border-radius: 6px;
     cursor: pointer;
 `;
 
