@@ -5,6 +5,7 @@ import { Category } from "../pages/Category";
 import { Layout } from "../component/layout/Layout";
 import { Setting } from "../pages/Setting";
 import { Login } from "../pages/login/Login.tsx";
+import { Signup } from "../pages/login/Signup.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -20,5 +21,9 @@ export const router = createBrowserRouter([
     {
         path: "/login",
         element: <Login />,
+    },
+    {
+        path: "/signup",
+        element: <Signup />,
     },
 ]);

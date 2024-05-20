@@ -2,28 +2,26 @@ import styled from "styled-components";
 import { variable } from "../style/variable";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase/firebase";
-import { useEffect, useState } from "react";
-import { User } from "firebase/auth";
 
 export const Setting = () => {
     const navigate = useNavigate();
 
-    const [isLogin, setLogin] = useState<User | null>(null);
-    useEffect(() => {
-        setLogin(auth.currentUser);
-    }, [auth]);
+    const isLogin = auth.currentUser;
 
     const logOut = () => {
         auth.signOut();
+        navigate(0);
     };
 
     return (
         <div>
             <LoginArea>
                 <LoginLeft>
-                    <Profile></Profile>
                     {isLogin ? (
-                        <NameText>{auth.currentUser?.email}</NameText>
+                        <>
+                            <Profile></Profile>
+                            <NameText>{auth.currentUser?.email}</NameText>
+                        </>
                     ) : (
                         <LoginText onClick={() => navigate("/login")}>
                             로그인하여 정보를 저장하세요.
@@ -47,6 +45,7 @@ const LoginLeft = styled.div`
     display: flex;
     align-items: center;
     gap: 10px;
+    height: 40px;
     cursor: pointer;
 `;
 
@@ -63,6 +62,7 @@ const NameText = styled.div`
 
 const LoginText = styled.div`
     color: ${variable.textDefaultColor};
+    height: 40px;
 `;
 
 const Logout = styled.div`
