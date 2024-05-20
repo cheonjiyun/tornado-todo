@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Variable } from "../../style/Variable";
+import { variable } from "../../style/variable";
 import { useNavigate } from "react-router-dom";
 
 export const NavDestop = () => {
@@ -105,7 +105,7 @@ const Navigation = styled.nav<NavigationPropsType>`
 
         width: calc(100% / 3); // 버튼 하나가 차지하는 가로 크기
         height: 1px;
-        background-color: ${Variable.navSelectedColor};
+        background-color: ${variable.navSelectedColor};
 
         transition: left 0.3s; // 빨간색 선 트랜지션
     }
@@ -124,7 +124,7 @@ const NavMenu = styled.nav<NavMenuPropsType>`
     align-items: center;
     min-width: 64px;
     font-size: 16px;
-    color: ${(props) => (props.selected ? Variable.navSelectedColor : Variable.navDefaultColor)};
+    color: ${(props) => (props.selected ? variable.navSelectedColor : variable.navDefaultColor)};
 
     cursor: pointer;
 

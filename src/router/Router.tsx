@@ -4,6 +4,7 @@ import { Calendar } from "../pages/Calendar";
 import { Category } from "../pages/Category";
 import { Layout } from "../component/layout/Layout";
 import { Setting } from "../pages/Setting";
+import { Login } from "../pages/login/Login.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -15,5 +16,9 @@ export const router = createBrowserRouter([
             { path: "category", element: <Category /> },
             { path: "setting", element: <Setting /> },
         ],
+    },
+    {
+        path: "/login",
+        element: <Login />,
     },
 ]);

@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { Variable } from "../../style/Variable";
+import { variable } from "../../style/variable";
 
 export const NavMobile = () => {
     const navigate = useNavigate();
@@ -127,7 +127,7 @@ const Navigation = styled.nav<NavigationPropsType>`
 
         width: calc((100vw - 4rem) / 4); // 버튼 하나가 차지하는 가로 크기
         height: 1px;
-        background-color: ${Variable.navSelectedColor};
+        background-color: ${variable.navSelectedColor};
 
         transition: left 0.3s; // 빨간색 선 트랜지션
     }
@@ -143,7 +143,7 @@ const NavMenu = styled.nav<NavMenuPropsType>`
     align-items: center;
     min-width: 64px;
     font-size: 16px;
-    color: ${(props) => (props.selected ? Variable.navSelectedColor : Variable.navDefaultColor)};
+    color: ${(props) => (props.selected ? variable.navSelectedColor : variable.navDefaultColor)};
     flex-grow: 1;
     flex-basis: 62px;
     cursor: pointer;
@@ -158,7 +158,7 @@ export const PlusButton = styled.div`
     top: -50%;
     width: 4rem;
     height: 4rem;
-    background-color: ${Variable.primaryColor};
+    background-color: ${variable.primaryColor};
     border-radius: 100%;
     transition: transform 0.3s;
     cursor: pointer;
