@@ -5,11 +5,11 @@ import { variable } from "../../style/variable";
 import { useForm } from "react-hook-form";
 
 type PropsType = {
-    onBefore: () => void;
-    onNext: () => void;
+    goBefore: () => void;
+    goNext: () => void;
 };
 
-export const LoginInputPassword = ({ onBefore, onNext }: PropsType) => {
+export const LoginInputPassword = ({ goBefore, goNext }: PropsType) => {
     const {
         register,
         handleSubmit,
@@ -23,14 +23,14 @@ export const LoginInputPassword = ({ onBefore, onNext }: PropsType) => {
 
     return (
         <div>
-            <LoginTop text="로그인" onBefore={onBefore} />
+            <LoginTop text="로그인" onBefore={goBefore} />
             <Middle>
                 <PassWordForm
                     onSubmit={handleSubmit((data) => {
                         console.log(data);
 
                         if (onLogin(data)) {
-                            onNext();
+                            goNext();
                         }
                     })}
                 >

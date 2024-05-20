@@ -4,12 +4,12 @@ import { LoginTop } from "../../component/login/LoginTop";
 import { useForm } from "react-hook-form";
 
 type PropsType = {
-    onBefore: () => void;
-    setData: (data) => void;
-    onNext: (page) => void;
+    goBefore: () => void;
+    setEmail: (newEmail: string) => void;
+    goNext: (page) => void;
 };
 
-export const LoginFirst = ({ onBefore, onNext }: PropsType) => {
+export const LoginFirst = ({ goBefore, setEmail, goNext }: PropsType) => {
     const {
         register,
         handleSubmit,
@@ -23,17 +23,17 @@ export const LoginFirst = ({ onBefore, onNext }: PropsType) => {
 
     return (
         <div>
-            <LoginTop text="로그인" onBefore={onBefore} />
+            <LoginTop text="로그인" onBefore={goBefore} />
             <Middle>
                 <EmailForm
                     onSubmit={handleSubmit((data) => {
-                        console.log(data);
+                        setEmail(data.email);
 
                         // 이메일이 있으면 비밀번호 입력 없으면 회원가입
                         if (existEmail(data)) {
-                            onNext("inputPassword");
+                            goNext("inputPassword");
                         } else {
-                            onNext("signUp");
+                            goNext("signUp");
                         }
                     })}
                 >

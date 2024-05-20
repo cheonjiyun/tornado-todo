@@ -1,9 +1,10 @@
 import styled from "styled-components";
 import { variable } from "../style/variable";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase/firebase";
 
 export const Setting = () => {
-    const isLogin = false;
+    const isLogin = auth.currentUser;
 
     const navigate = useNavigate();
 
@@ -13,7 +14,7 @@ export const Setting = () => {
                 <LoginLeft>
                     <Profile></Profile>
                     {isLogin ? (
-                        <NameText>이름</NameText>
+                        <NameText>{auth.currentUser?.email}</NameText>
                     ) : (
                         <LoginText onClick={() => navigate("/login")}>
                             로그인하여 정보를 저장하세요.

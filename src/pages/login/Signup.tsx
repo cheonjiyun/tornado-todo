@@ -3,13 +3,16 @@ import { LoginTop } from "../../component/login/LoginTop";
 import { InputErrorMessage, Label, Middle, TextInput } from "./LoginFirst";
 import { variable } from "../../style/variable";
 import { useForm } from "react-hook-form";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase/firebase";
 
 type PropsType = {
-    onBefore: () => void;
-    onNext: () => void;
+    goBefore: () => void;
+    emailData: string;
+    goNext: () => void;
 };
 
-export const Signup = ({ onBefore, onNext }: PropsType) => {
+export const Signup = ({ goBefore, emailData, goNext }: PropsType) => {
     const {
         register,
         handleSubmit,
@@ -17,13 +20,27 @@ export const Signup = ({ onBefore, onNext }: PropsType) => {
         getValues,
     } = useForm();
 
+    const onLogin = async (email: string, password: string) => {
+        try {
+            const credentials = await createUserWithEmailAndPassword(auth, email, password);
+            console.log(credentials);
+            goNext();
+        } catch (e) {
+            //error
+        } finally {
+            //
+        }
+    };
+
     return (
         <div>
-            <LoginTop text="회원가입" onBefore={onBefore} />
+            <LoginTop text="회원가입" onBefore={goBefore} />
             <Middle>
                 <PassWordForm
                     onSubmit={handleSubmit((data) => {
-                        console.log(data);
+                        const email = emailData;
+                        const password = data.password;
+                        onLogin(email, password);
                     })}
                 >
                     <Label htmlFor="password">비밀번호</Label>

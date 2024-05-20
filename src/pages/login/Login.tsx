@@ -1,37 +1,47 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LoginFirst } from "./LoginFirst";
 import { LoginInputPassword } from "./LoginInputPassword";
 import { Signup } from "./Signup";
 import { useNavigate } from "react-router-dom";
 import { LoginSuccess } from "./LoginSuccess";
-
+import { auth } from "../../firebase/firebase";
+import { User } from "firebase/auth";
 export const Login = () => {
     const navigate = useNavigate();
 
-    const [loginData, setDate] = useState({ email: "", paasword: "" });
+    const [loginEmailData, setEmail] = useState<string>("");
     const [loginState, setLoginState] = useState<
         "first" | "inputPassword" | "signUp" | "loginSuccess"
     >("first");
+
+    const [isLogin, setLogin] = useState<User | null>(null);
+    useEffect(() => {
+        setLogin(auth.currentUser);
+        navigate("/");
+    }, []);
+
+    console.log(isLogin);
 
     return (
         <div>
             {loginState === "first" && (
                 <LoginFirst
-                    onBefore={() => navigate(-1)}
-                    setData={(data) => setDate(data)}
-                    onNext={(page) => setLoginState(page)}
+                    goBefore={() => navigate(-1)}
+                    setEmail={(newEmail: string) => setEmail(newEmail)}
+                    goNext={(page) => setLoginState(page)}
                 />
             )}
             {loginState === "inputPassword" && (
                 <LoginInputPassword
-                    onBefore={() => setLoginState("first")}
-                    onNext={() => setLoginState("loginSuccess")}
+                    goBefore={() => setLoginState("first")}
+                    goNext={() => setLoginState("loginSuccess")}
                 />
             )}
             {loginState === "signUp" && (
                 <Signup
-                    onBefore={() => setLoginState("first")}
-                    onNext={() => setLoginState("loginSuccess")}
+                    goBefore={() => setLoginState("first")}
+                    emailData={loginEmailData}
+                    goNext={() => setLoginState("loginSuccess")}
                 />
             )}
             {loginState === "loginSuccess" && <LoginSuccess />}
