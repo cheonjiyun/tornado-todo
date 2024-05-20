@@ -2,11 +2,20 @@ import styled from "styled-components";
 import { variable } from "../style/variable";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase/firebase";
+import { useEffect, useState } from "react";
+import { User } from "firebase/auth";
 
 export const Setting = () => {
-    const isLogin = auth.currentUser;
-
     const navigate = useNavigate();
+
+    const [isLogin, setLogin] = useState<User | null>(null);
+    useEffect(() => {
+        setLogin(auth.currentUser);
+    }, [auth]);
+
+    const logOut = () => {
+        auth.signOut();
+    };
 
     return (
         <div>
@@ -21,7 +30,7 @@ export const Setting = () => {
                         </LoginText>
                     )}
                 </LoginLeft>
-                {isLogin && <Logout>로그아웃</Logout>}
+                {isLogin && <Logout onClick={logOut}>로그아웃</Logout>}
             </LoginArea>
         </div>
     );

@@ -17,7 +17,9 @@ export const Login = () => {
     const [isLogin, setLogin] = useState<User | null>(null);
     useEffect(() => {
         setLogin(auth.currentUser);
-        navigate("/");
+        if (auth.currentUser) {
+            navigate("/");
+        }
     }, []);
 
     console.log(isLogin);
