@@ -13,4 +13,47 @@ export const GlobalStyles = createGlobalStyle`
     input, button{        
         font-family: "Pretendard Variable";
     }
+    button{
+        border: 0;
+        background: none;
+    }
+
+    @keyframes showSmooth {
+        from{
+            opacity: 0;
+        }
+        to{
+            opacity: 1;
+        }
+    }
+
+    @keyframes outSmooth {
+        from{
+            opacity: 1;
+        }
+        to{
+            opacity: 0;
+        }
+    }
+
+
+    @keyframes upSmooth {
+        from{
+            transform: translateY(30%);
+        }
+        to{
+            transform: translateY(0);
+        }
+        
+    }
+
+    @keyframes downSmooth {
+        from{
+            transform: translateY(0);
+        }
+        to{
+            transform: translateY(30%);
+        }
+        
+    }
 `;
