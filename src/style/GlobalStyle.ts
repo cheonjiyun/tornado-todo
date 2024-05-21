@@ -39,7 +39,7 @@ export const GlobalStyles = createGlobalStyle`
 
     @keyframes upSmooth {
         from{
-            transform: translateY(30%);
+            transform: translateY(100%);
         }
         to{
             transform: translateY(0);
@@ -52,7 +52,7 @@ export const GlobalStyles = createGlobalStyle`
             transform: translateY(0);
         }
         to{
-            transform: translateY(30%);
+            transform: translateY(100%);
         }
         
     }

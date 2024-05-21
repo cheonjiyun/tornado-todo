@@ -11,6 +11,7 @@ export const AddTodo = () => {
     const [isOpenRecoilState, setOepnRecoilState] = useRecoilState(isOpenAddTodoState);
     const [isOpen, setOpen] = useState(false);
 
+    // 애니메이션을 위해 지연 close
     useEffect(() => {
         let code = null;
         if (isOpenRecoilState) {
@@ -18,7 +19,7 @@ export const AddTodo = () => {
         } else {
             code = setTimeout(() => {
                 setOpen(isOpenRecoilState);
-            }, 300);
+            }, 380);
         }
 
         return () => {
@@ -67,41 +68,16 @@ export const AddTodo = () => {
         setRecording(false);
     };
 
-    //css
-    const Dimmed = styled.div`
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        background-color: rgba(0, 0, 0, 0.3);
-        z-index: 2;
-
-        animation: ${isOpenRecoilState ? " showSmooth 0.4s" : "outSmooth 0.4s"};
-    `;
-
-    const ContainerForm = styled.form`
-        box-sizing: border-box;
-        position: absolute;
-        width: 100%;
-        padding: 8px 18px 50px 18px;
-        left: 0;
-        bottom: 0;
-        display: flex;
-        flex-direction: column;
-        background-color: #ffffff;
-        border-radius: 16px 16px 0 0;
-        z-index: 3;
-
-        animation: ${isOpenRecoilState ? "upSmooth 0.4s" : "downSmooth 0.4s"};
-    `;
-
     return (
         <>
             {isOpen && (
                 <div>
-                    <Dimmed onClick={() => setOepnRecoilState(false)}></Dimmed>
+                    <Dimmed
+                        $isOpenRecoilState={isOpenRecoilState}
+                        onClick={() => setOepnRecoilState(false)}
+                    ></Dimmed>
                     <ContainerForm
+                        $isOpenRecoilState={isOpenRecoilState}
                         onSubmit={handleSubmit((data) => {
                             console.log(data);
                         })}
@@ -185,6 +161,39 @@ export const AddTodo = () => {
         </>
     );
 };
+
+//css
+type openTypeProps = {
+    $isOpenRecoilState: boolean;
+};
+
+const Dimmed = styled.div<openTypeProps>`
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 2;
+
+    animation: ${(props) => (props.$isOpenRecoilState ? " showSmooth 0.4s" : "outSmooth 0.4s")};
+`;
+
+const ContainerForm = styled.form<openTypeProps>`
+    box-sizing: border-box;
+    position: absolute;
+    width: 100%;
+    padding: 8px 18px 50px 18px;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border-radius: 16px 16px 0 0;
+    z-index: 3;
+
+    animation: ${(props) => (props.$isOpenRecoilState ? "upSmooth 0.4s" : "downSmooth 0.4s")};
+`;
 
 const TopMenu = styled.div`
     min-height: 68px;

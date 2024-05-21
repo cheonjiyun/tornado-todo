@@ -8,7 +8,6 @@ export const AddButton = () => {
 
     const openAddTodoArea = () => {
         setOpen(true);
-        console.log("흠");
     };
 
     return (
