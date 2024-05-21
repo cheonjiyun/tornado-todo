@@ -1,13 +1,12 @@
-import styled from "styled-components";
-import { LoginTop } from "../../component/login/LoginTop";
-import { InputErrorMessage, Label, Middle, TextInput } from "./Login";
-import { variable } from "../../style/variable";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
-import { Form, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
-import { useState } from "react";
+import { InputLabel, PrimaryButton, TextInput } from "../../style/styleComponents";
+import { LoginTop } from "../../component/login/LoginTop";
+import { InputErrorMessage, LoginForm, Middle } from "./Login";
 
 export const Signup = () => {
     const navigate = useNavigate();
@@ -40,15 +39,15 @@ export const Signup = () => {
     };
 
     return (
-        <div>
+        <>
             <LoginTop text="회원가입" />
             <Middle>
-                <Form
+                <LoginForm
                     onSubmit={handleSubmit((data) => {
                         onSignup(data.email, data.password);
                     })}
                 >
-                    <Label htmlFor="email">이메일</Label>
+                    <InputLabel htmlFor="email">이메일</InputLabel>
                     <TextInput
                         {...register("email", { required: "이메일을 입력하세요" })}
                         type="email"
@@ -60,7 +59,7 @@ export const Signup = () => {
                         {existEmailMssage}
                         {errors.email && "" + errors.email.message}
                     </InputErrorMessage>
-                    <Label htmlFor="password">비밀번호</Label>
+                    <InputLabel htmlFor="password">비밀번호</InputLabel>
                     <TextInput
                         {...register("password", {
                             required: "비밀번호를 입력해주세요",
@@ -80,7 +79,7 @@ export const Signup = () => {
                         {" "}
                         {errors.password && "" + errors.password.message}
                     </InputErrorMessage>
-                    <Label htmlFor="passwordCheck">비밀번호 확인</Label>
+                    <InputLabel htmlFor="passwordCheck">비밀번호 확인</InputLabel>
                     <TextInput
                         {...register("passwordCheck", {
                             required: "비밀번호확인을 입력해주세요",
@@ -136,8 +135,8 @@ export const Signup = () => {
                             "회원가입 완료"
                         )}
                     </PrimaryButton>
-                </Form>
+                </LoginForm>
             </Middle>
-        </div>
+        </>
     );
 };

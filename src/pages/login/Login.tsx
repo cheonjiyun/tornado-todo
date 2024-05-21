@@ -70,7 +70,7 @@ export const Login = () => {
         <>
             <LoginTop text="로그인" />
             <Middle>
-                <Form
+                <LoginForm
                     onSubmit={handleSubmit((data) => {
                         onLogin(data.email, data.password);
                     })}
@@ -136,7 +136,7 @@ export const Login = () => {
                             "로그인"
                         )}
                     </PrimaryButton>
-                </Form>
+                </LoginForm>
                 <GoogleLogin onClick={onGooleLogin}>
                     <img src="/img/google.png" width="24px" /> 구글로 로그인
                 </GoogleLogin>
@@ -152,7 +152,7 @@ export const Middle = styled.div`
     max-width: 1024px;
 `;
 
-export const Form = styled.form`
+export const LoginForm = styled.form`
     display: flex;
     flex-direction: column;
 `;
