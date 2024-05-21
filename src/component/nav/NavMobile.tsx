@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { variable } from "../../style/variable";
+import { AddButton } from "../todo/AddButton";
 
 export const NavMobile = () => {
     const navigate = useNavigate();
@@ -60,7 +61,7 @@ export const NavMobile = () => {
                 </svg>
                 <p>달력</p>
             </NavMenu>
-            <PlusButton></PlusButton>
+            <AddButton></AddButton>
             <NavMenu
                 onClick={() => changePage("/category")}
                 selected={location.pathname === "/category"}
@@ -149,46 +150,4 @@ const NavMenu = styled.nav<NavMenuPropsType>`
     cursor: pointer;
 
     transition: color 0.2s;
-`;
-
-export const PlusButton = styled.div`
-    flex-grow: 0;
-    flex-shrink: 0;
-    position: relative;
-    top: -50%;
-    width: 4rem;
-    height: 4rem;
-    background-color: ${variable.primaryColor};
-    border-radius: 100%;
-    transition: transform 0.3s;
-    cursor: pointer;
-    z-index: 1;
-
-    &:hover {
-        transform: scale(120%);
-    }
-
-    &::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 16px;
-        height: 2px;
-        background-color: #f0f5f8;
-        transform: translate(-50%, -50%);
-        border-radius: 16px;
-    }
-
-    &::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 2px;
-        height: 16px;
-        background-color: #f0f5f8;
-        transform: translate(-50%, -50%);
-        border-radius: 16px;
-    }
 `;

@@ -5,6 +5,8 @@ import { Todo } from "../../pages/Todo";
 import styled from "styled-components";
 import { Calendar } from "../../pages/Calendar";
 import { NavDestop } from "../nav/NavDestop";
+import { AddButton } from "../todo/AddButton";
+import { AddTodo } from "../todo/AddTodo";
 
 export const Layout = () => {
     // 높이
@@ -36,11 +38,12 @@ export const Layout = () => {
     return (
         <>
             {windowWidth > 1024 ? (
+                // 데스크탑
                 <Desktop $innerHeight={innerHeight}>
                     <DesktopLeft>
                         <Todo />
                         <PlusButtonContainer>
-                            <PlusButton />
+                            <AddButton />
                         </PlusButtonContainer>
                     </DesktopLeft>
                     <DesktopRight>
@@ -49,12 +52,14 @@ export const Layout = () => {
                     </DesktopRight>
                 </Desktop>
             ) : (
+                // 모바일
                 <>
                     {" "}
                     <Outlet />
                     <NavMobile />
                 </>
             )}
+            <AddTodo />
         </>
     );
 };
