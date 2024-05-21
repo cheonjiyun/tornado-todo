@@ -12,6 +12,7 @@ import {
 import { FirebaseError } from "firebase/app";
 import { auth } from "../../firebase/firebase";
 import { useEffect, useState } from "react";
+import { InputLabel, PrimaryButton, TextInput } from "../../style/styleComponents";
 
 export const Login = () => {
     const navigate = useNavigate();
@@ -69,12 +70,12 @@ export const Login = () => {
         <>
             <LoginTop text="로그인" />
             <Middle>
-                <EmailForm
+                <Form
                     onSubmit={handleSubmit((data) => {
                         onLogin(data.email, data.password);
                     })}
                 >
-                    <Label htmlFor="email">이메일</Label>
+                    <InputLabel htmlFor="email">이메일</InputLabel>
                     <TextInput
                         {...register("email", { required: "이메일을 입력하세요" })}
                         type="email"
@@ -85,7 +86,7 @@ export const Login = () => {
                         {" "}
                         {errors.email && "" + errors.email.message}
                     </InputErrorMessage>
-                    <Label htmlFor="password">비밀번호</Label>
+                    <InputLabel htmlFor="password">비밀번호</InputLabel>
                     <TextInput
                         {...register("password", {
                             required: "비밀번호를 입력해주세요",
@@ -99,7 +100,7 @@ export const Login = () => {
                         {errorMessage}
                         {errors.password && "" + errors.password.message}
                     </InputErrorMessage>
-                    <ContinueButton type="submit">
+                    <PrimaryButton type="submit">
                         {loading ? (
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -134,8 +135,8 @@ export const Login = () => {
                         ) : (
                             "로그인"
                         )}
-                    </ContinueButton>
-                </EmailForm>
+                    </PrimaryButton>
+                </Form>
                 <GoogleLogin onClick={onGooleLogin}>
                     <img src="/img/google.png" width="24px" /> 구글로 로그인
                 </GoogleLogin>
@@ -151,27 +152,9 @@ export const Middle = styled.div`
     max-width: 1024px;
 `;
 
-const EmailForm = styled.form`
+export const Form = styled.form`
     display: flex;
     flex-direction: column;
-`;
-
-export const Label = styled.label`
-    margin-top: 20px;
-    font-size: 14px;
-    color: ${variable.textDefaultColor};
-    margin-bottom: 6px;
-`;
-
-export const TextInput = styled.input`
-    padding: 14px;
-    border-radius: 6px;
-    border: 1px solid ${variable.borderDefaultColor};
-    font-size: 16px;
-
-    &::placeholder {
-        color: ${variable.placeholderColor};
-    }
 `;
 
 export const InputErrorMessage = styled.p`
@@ -179,17 +162,6 @@ export const InputErrorMessage = styled.p`
     height: 14px;
     color: ${variable.redColor};
     font-size: 14px;
-`;
-
-const ContinueButton = styled.button`
-    margin-top: 20px;
-    padding: 14px;
-    font-size: 16px;
-    color: ${variable.buttonReadyTextColor};
-    background-color: ${variable.buttonReadyBackgroundColor};
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
 `;
 
 const GoogleLogin = styled.div`

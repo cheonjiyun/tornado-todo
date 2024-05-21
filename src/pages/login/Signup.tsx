@@ -5,7 +5,7 @@ import { variable } from "../../style/variable";
 import { useForm } from "react-hook-form";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
-import { useNavigate } from "react-router-dom";
+import { Form, useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
 import { useState } from "react";
 
@@ -43,7 +43,7 @@ export const Signup = () => {
         <div>
             <LoginTop text="회원가입" />
             <Middle>
-                <PassWordForm
+                <Form
                     onSubmit={handleSubmit((data) => {
                         onSignup(data.email, data.password);
                     })}
@@ -100,7 +100,7 @@ export const Signup = () => {
                         {" "}
                         {errors.passwordCheck && "" + errors.passwordCheck.message}
                     </InputErrorMessage>
-                    <SignButton type="submit">
+                    <PrimaryButton type="submit">
                         {loading ? (
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -135,26 +135,9 @@ export const Signup = () => {
                         ) : (
                             "회원가입 완료"
                         )}
-                    </SignButton>
-                </PassWordForm>
+                    </PrimaryButton>
+                </Form>
             </Middle>
         </div>
     );
 };
-
-const PassWordForm = styled.form`
-    display: flex;
-    flex-direction: column;
-`;
-
-const SignButton = styled.button`
-    display: block;
-    margin-top: 20px;
-    padding: 14px;
-    font-size: 16px;
-    color: ${variable.buttonReadyTextColor};
-    background-color: ${variable.buttonReadyBackgroundColor};
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-`;
