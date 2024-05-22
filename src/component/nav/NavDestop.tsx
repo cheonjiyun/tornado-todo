@@ -95,6 +95,7 @@ const Navigation = styled.nav<NavigationPropsType>`
     width: 100%;
     height: 60px;
     border-top: 1px solid #ebebeb;
+    background-color: #ffffff;
 
     &::after {
         content: "";

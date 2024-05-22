@@ -7,6 +7,7 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { todosRecoil } from "../recoil/todos/atom";
 import { useRecoilState } from "recoil";
+import { EditTodo } from "../component/todo/EditTodo";
 
 export const Todo = () => {
     const [todos, setTodos] = useRecoilState(todosRecoil);
@@ -55,16 +56,43 @@ export const Todo = () => {
         // setTodos(newTodos);
     };
 
+    // edit
+    const [editOpen, setEditOpen] = useState(false);
+    const [editCurrentTodo, setEditCurrentTodo] = useState<TodoType>({
+        userEmail: "",
+        id: 0,
+        text: "",
+        completed: false,
+        calendar: null,
+        category: null,
+    });
+
     return (
-        <div>
+        <Container>
             <Title>폭풍 할일</Title>
             {todos.map((todo) => {
-                return <TodoContainer todo={todo} key={todo.text} toggleCheck={toggleCheckTodo} />;
+                return (
+                    <TodoContainer
+                        todo={todo}
+                        key={todo.text}
+                        toggleCheck={toggleCheckTodo}
+                        setEditOpen={() => setEditOpen(true)}
+                        setEditCurrentTodo={(current: TodoType) => setEditCurrentTodo(current)}
+                    />
+                );
             })}
-        </div>
+            <EditTodo
+                editCurrentTodo={editCurrentTodo}
+                editOpen={editOpen}
+                setEditClose={() => setEditOpen(false)}
+            />
+        </Container>
     );
 };
 
+const Container = styled.div`
+    width: 100%;
+`;
 const Title = styled.div`
     padding: 16px;
     text-align: center;

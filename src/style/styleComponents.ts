@@ -25,7 +25,7 @@ export const TextInput = styled.input`
 
 export const InputLabel = styled.label`
     margin-top: 20px;
-    font-size: 14px;
+    font-size: 16px;
     color: ${variable.textDefaultColor};
     margin-bottom: 6px;
 `;

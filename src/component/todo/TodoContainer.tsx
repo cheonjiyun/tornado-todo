@@ -4,9 +4,16 @@ import { TodoType } from "../../type/todo";
 type PropsType = {
     todo: TodoType;
     toggleCheck: (id: number) => void;
+    setEditOpen: () => void;
+    setEditCurrentTodo: (current: TodoType) => void;
 };
 
-export const TodoContainer = ({ todo, toggleCheck }: PropsType) => {
+export const TodoContainer = ({
+    todo,
+    toggleCheck,
+    setEditOpen,
+    setEditCurrentTodo,
+}: PropsType) => {
     return (
         <Container>
             <TodoLeft>
@@ -31,18 +38,25 @@ export const TodoContainer = ({ todo, toggleCheck }: PropsType) => {
                 </CheckBox>
                 <TodoText $completed={todo.completed}>{todo.text}</TodoText>
             </TodoLeft>
-            <svg
-                width="24"
-                height="25"
-                viewBox="0 0 24 25"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+            <EditButton
+                onClick={() => {
+                    setEditOpen();
+                    setEditCurrentTodo(todo);
+                }}
             >
-                <path
-                    d="M20.71 7.54C21.1 7.15 21.1 6.5 20.71 6.13L18.37 3.79C18 3.4 17.35 3.4 16.96 3.79L15.12 5.62L18.87 9.37M3 17.75V21.5H6.75L17.81 10.43L14.06 6.68L3 17.75Z"
-                    fill="#545454"
-                />
-            </svg>
+                <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M20.71 7.54C21.1 7.15 21.1 6.5 20.71 6.13L18.37 3.79C18 3.4 17.35 3.4 16.96 3.79L15.12 5.62L18.87 9.37M3 17.75V21.5H6.75L17.81 10.43L14.06 6.68L3 17.75Z"
+                        fill="#545454"
+                    />
+                </svg>
+            </EditButton>
         </Container>
     );
 };
@@ -83,4 +97,8 @@ const TodoText = styled.div<completedType>`
     font-size: 16px;
 
     ${(props) => props.$completed && "text-decoration: line-through; color: #b3b3b3"};
+`;
+
+const EditButton = styled.div`
+    cursor: pointer;
 `;
