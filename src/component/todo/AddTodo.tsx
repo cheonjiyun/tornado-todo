@@ -4,6 +4,10 @@ import { isOpenAddTodoState } from "../../recoil/addTodo/atom";
 import { useEffect, useState } from "react";
 import { variable } from "../../style/variable";
 import { useForm } from "react-hook-form";
+import { addDoc, collection } from "firebase/firestore";
+import { auth, db } from "../../firebase/firebase";
+import { todosRecoil } from "../../recoil/todos/atom";
+import { TodoType } from "../../type/todo";
 
 export const AddTodo = () => {
     const { register, handleSubmit, setValue } = useForm();
@@ -68,6 +72,35 @@ export const AddTodo = () => {
         setRecording(false);
     };
 
+    const user = auth.currentUser;
+
+    const [todos, setTodos] = useRecoilState(todosRecoil);
+
+    // todo 추가
+    const submitTodo = async (data) => {
+        if (!user || !user.email) {
+            return;
+        }
+
+        const newTodo: TodoType = {
+            userEmail: user.email,
+            id: 2,
+            text: data.newtodo,
+            completed: false,
+            calendar: null,
+            category: null,
+        };
+
+        try {
+            await addDoc(collection(db, "todos"), newTodo);
+            setOepnRecoilState(false);
+            setTodos([...todos, newTodo]);
+            setValue("email", "");
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
     return (
         <>
             {isOpen && (
@@ -79,7 +112,7 @@ export const AddTodo = () => {
                     <ContainerForm
                         $isOpenRecoilState={isOpenRecoilState}
                         onSubmit={handleSubmit((data) => {
-                            console.log(data);
+                            submitTodo(data);
                         })}
                     >
                         <TopMenu>
