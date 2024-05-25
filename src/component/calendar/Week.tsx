@@ -3,7 +3,6 @@ import styled from "styled-components";
 
 type PropsType = {
     children: JSX.Element;
-    // ref?: React.ForwardedRef<HTMLDivElement>;
 };
 
 export const Week = forwardRef(

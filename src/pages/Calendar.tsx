@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { Week } from "../component/calendar/Week";
 import { Day } from "../component/calendar/Day";
 import { useEffect, useRef, useState } from "react";
+import { getRestInfo } from "../axios/http";
 
 export const Calendar = () => {
     const today = new Date();
@@ -13,40 +14,33 @@ export const Calendar = () => {
             const temp = new Date();
             temp.setDate(todayDate - i);
             if (temp.getDay() == 0) {
-                return temp.getDate();
+                return temp;
             }
         }
-        return today.getDate();
+        return today;
     };
 
     // 일요일을 기점으로 일주일 반환
-    const getAWeek = (date: number) => {
+    const getAWeek = (date: Date) => {
         const arr: Date[] = [];
-
         for (let i = 0; i < 7; i++) {
-            const temp = new Date();
-            temp.setDate(date + i);
-            arr.push(temp);
+            arr.push(new Date(+date + 86400000 * i));
         }
-
         return arr;
     };
 
-    // const weeks = [getAWeek(getCloseSunday())];
     const [weeks, setWeeks] = useState<Date[][]>([getAWeek(getCloseSunday())]);
 
-    // 뒤로 새 일주일
+    // 새 일주일
     const addNewWeek = (topBottom: "TOP" | "BOTTOM") => {
-        console.log(topBottom);
-
         const temp = [...weeks];
         if (topBottom === "TOP") {
-            const firstSunDayDate = temp[0][0].getDate();
-            const newWeek = getAWeek(firstSunDayDate - 7);
+            const firstSunDayDate = temp[0][0];
+            const newWeek = getAWeek(new Date(+firstSunDayDate - 86400000 * 7));
             temp.unshift(newWeek);
         } else {
-            const lastSunDayDate = temp[temp.length - 1][0].getDate();
-            const newWeek = getAWeek(lastSunDayDate + 7);
+            const lastSunDayDate = temp[temp.length - 1][0];
+            const newWeek = getAWeek(new Date(+lastSunDayDate + 86400000 * 7));
             temp.push(newWeek);
         }
 
@@ -85,31 +79,49 @@ export const Calendar = () => {
             addNewWeek("TOP");
         } else if (weeks.length < 7) {
             addNewWeek("BOTTOM");
+            thirdItemRef.current?.scrollIntoView({ block: "center" });
         }
-        firstItemRef.current?.scrollIntoView({ block: "center" });
     }, [weeks]);
 
-    const firstItemRef = useRef<HTMLDivElement | null>(null);
+    const thirdItemRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         addNewWeek("TOP");
-        firstItemRef.current?.scrollIntoView({ block: "center" });
+        thirdItemRef.current?.scrollIntoView({ block: "center" });
     }, [scrollCountTop]);
 
     useEffect(() => {
         addNewWeek("BOTTOM");
     }, [scrollCountBottom]);
 
+    // 연도 월 표시
+    const [currentYear, setCurrentYear] = useState(+today.getFullYear());
+    const [currentMonth, setCurrentMonth] = useState(today.getMonth() + 1);
+
+    const displayYearMonth = (year: number, month: number) => {
+        setCurrentYear(year);
+        setCurrentMonth(month);
+    };
+
     return (
         <Container>
-            <Number>2024.05</Number>
+            <Number>
+                {currentYear}.{currentMonth}
+            </Number>
             <Contents>
                 <div id="observerTop" style={{ height: "10px", margin: "-5px" }}></div>
                 {weeks.map((week, idx) => (
-                    <Week ref={idx === 3 ? firstItemRef : null} key={`${week[0]} ${idx}`}>
+                    <Week ref={idx === 3 ? thirdItemRef : null} key={`${week[0]} ${idx}`}>
                         <>
                             {week.map((date, i) => {
-                                return <Day date={date} key={`${date} ${i}`} index={i} />;
+                                return (
+                                    <Day
+                                        displayYearMonth={displayYearMonth}
+                                        date={date}
+                                        key={`${date} ${i}`}
+                                        index={i}
+                                    />
+                                );
                             })}
                         </>
                     </Week>

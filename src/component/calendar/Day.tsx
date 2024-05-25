@@ -1,17 +1,48 @@
 import styled from "styled-components";
 import { variable } from "../../style/variable";
+import { restDates } from "../../store/restDate";
+import { getRestInfo } from "../../axios/http";
+import { useEffect, useState } from "react";
 
 type PropsType = {
     date: Date;
     index: number;
+    displayYearMonth: (year: number, month: number) => void;
 };
 
-export const Day = ({ date, index }: PropsType) => {
-    return <Container $color={index}>{date.getDate()}</Container>;
+export const Day = ({ date, index, displayYearMonth }: PropsType) => {
+    const [color, setColor] = useState("default");
+
+    useEffect(() => {
+        if (isRest(date)) {
+            setColor("red");
+        } else if (date.getDay() == 0) {
+            setColor("red");
+        } else if (date.getDay() == 6) {
+            setColor("blue");
+        }
+    }, []);
+
+    return (
+        <Container
+            $color={color}
+            onMouseEnter={() => {
+                displayYearMonth(+date.getFullYear(), date.getMonth() + 1);
+            }}
+        >
+            {date.getDate()}
+        </Container>
+    );
+};
+
+const colorVal = {
+    red: variable.redColor,
+    default: variable.textDefaultColor,
+    blue: variable.primaryColor,
 };
 
 type PropsColor = {
-    $color: number;
+    $color: string;
 };
 
 const Container = styled.div<PropsColor>`
@@ -20,5 +51,53 @@ const Container = styled.div<PropsColor>`
     flex: 1;
     height: 100%;
     padding-top: 10px;
-    color: ${(props) => (props.$color == 0 ? variable.redColor : variable.textDefaultColor)};
+    color: ${(props) => colorVal[props.$color]};
 `;
+
+const isRest = (date: Date) => {
+    const fullyearString: string = String(date.getFullYear());
+    const monthString: string = String(date.getMonth() + 1).padStart(2, "0");
+    const dayString: string = String(date.getDate()).padStart(2, "0");
+
+    if (!(fullyearString in restDates)) {
+        restDates[fullyearString] = { monthString: [] };
+    }
+    if (!(fullyearString in restDates) || !(monthString in restDates[fullyearString])) {
+        // 년도가 없음
+        //달이 없음
+        (async () => {
+            const response = await getRestInfo(fullyearString, monthString);
+            const item = response.response.body.items.item;
+            if (!item) {
+                // 공휴일이 없으면
+                return;
+            }
+            if (!item.length) {
+                // 공휴일이 하나밖에 없으면
+                const year = `${item.locdate}`.slice(0, 4);
+                const month = `${item.locdate}`.slice(4, 6);
+                const day = `${item.locdate}`.slice(6, 8);
+                restDates[year][month] = [day];
+            } else {
+                // 공휴일이 여러개
+                const year = `${item[0].locdate}`.slice(0, 4);
+                const month = `${item[0].locdate}`.slice(4, 6);
+                const dayArr = [];
+                for (let i = 0; i < item.length; i++) {
+                    const day = `${item[i].locdate}`.slice(6, 8);
+                    dayArr.push(day);
+                }
+
+                restDates[year][month] = dayArr;
+            }
+        })();
+    }
+
+    if (
+        restDates[fullyearString] &&
+        restDates[fullyearString][monthString] &&
+        restDates[fullyearString][monthString].includes(dayString)
+    ) {
+        return true;
+    }
+};
