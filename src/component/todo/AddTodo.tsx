@@ -4,7 +4,7 @@ import { isOpenAddTodoState } from "../../recoil/addTodo/atom";
 import { useEffect, useState } from "react";
 import { variable } from "../../style/variable";
 import { useForm } from "react-hook-form";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase/firebase";
 import { todosRecoil } from "../../recoil/todos/atom";
 import { TodoType } from "../../type/todo";
@@ -84,7 +84,7 @@ export const AddTodo = () => {
 
         const newTodo: TodoType = {
             userEmail: user.email,
-            id: 2,
+            id: todos.length,
             text: data.newtodo,
             completed: false,
             calendar: null,
@@ -92,10 +92,10 @@ export const AddTodo = () => {
         };
 
         try {
-            await addDoc(collection(db, "todos"), newTodo);
+            await setDoc(doc(db, "todos", `${todos.length}`), newTodo);
             setOepnRecoilState(false);
             setTodos([...todos, newTodo]);
-            setValue("email", "");
+            setValue("newtodo", "");
         } catch (e) {
             console.log(e);
         }

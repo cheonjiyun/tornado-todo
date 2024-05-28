@@ -2,8 +2,10 @@ import styled from "styled-components";
 import { variable } from "../../style/variable";
 import { InputLabel } from "../../style/styleComponents";
 import { useEffect, useState } from "react";
-import { TodoType } from "../../type/todo";
-import { useForm } from "react-hook-form";
+import { CategoryType, TodoType } from "../../type/todo";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
+import { auth, db } from "../../firebase/firebase";
 
 type PropsType = {
     editOpen: boolean;
@@ -40,6 +42,36 @@ export const EditTodo = ({ editCurrentTodo, editOpen, setEditClose }: PropsType)
         setValue("text", editCurrentTodo.text);
     }, [editCurrentTodo]);
 
+    const user = auth.currentUser;
+    // 카테고리 추가
+    const onAddCategory = async (data) => {
+        if (!user || !user.email) {
+            return;
+        }
+
+        const newCategory: CategoryType = {
+            userEmail: user.email,
+            category: data.category,
+        };
+
+        try {
+            await addDoc(collection(db, "category"), newCategory);
+            setValue("category", "");
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    // edit-삭제
+    const deleteTodo = async (id: number) => {
+        try {
+            await deleteDoc(doc(db, "todos", `${id}`));
+            setEditClose();
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
     return (
         <>
             {isOpenForView && (
@@ -58,12 +90,12 @@ export const EditTodo = ({ editCurrentTodo, editOpen, setEditClose }: PropsType)
                                     <path
                                         d="M1 15.1422L15.1421 1.00002"
                                         stroke="#8E8E8E"
-                                        stroke-linecap="round"
+                                        strokeLinecap="round"
                                     />
                                     <path
                                         d="M1 1L15.1421 15.1421"
                                         stroke="#8E8E8E"
-                                        stroke-linecap="round"
+                                        strokeLinecap="round"
                                     />
                                 </svg>
                             </Xbutton>
@@ -73,12 +105,34 @@ export const EditTodo = ({ editCurrentTodo, editOpen, setEditClose }: PropsType)
                         <Input
                             {...register("text", { required: "할 일을 입력하세요" })}
                             type="text"
+                            id="text"
                             name="text"
                         />
                         <InputLabel htmlFor="calendar">할날짜</InputLabel>
                         <Input name="calendar" />
-                        <InputLabel htmlFor="category">카테고리</InputLabel>
-                        <Input name="category" />
+                        <CategoryForm
+                            onSubmit={handleSubmit((data) => {
+                                onAddCategory(data);
+                            })}
+                        >
+                            <InputLabel htmlFor="category">카테고리</InputLabel>
+                            <Input
+                                {...register("category", {
+                                    required: "카테고리를 추가하게 하세요",
+                                })}
+                                name="category"
+                                placeholder="새로운 카테고리를 입력하여 추가할 수 있어요"
+                            />
+                        </CategoryForm>
+                        <CategoryContainer>
+                            <CategoryRadio id="1" type="radio" name="category" value={"집"} />
+                            <CategoryLabel htmlFor="1">집</CategoryLabel>
+                            <CategoryRadio id="2" type="radio" name="category" value={"학"} />
+                            <CategoryLabel htmlFor="2">학</CategoryLabel>
+                        </CategoryContainer>
+                        <DeleteButton onClick={() => deleteTodo(editCurrentTodo.id)}>
+                            삭제
+                        </DeleteButton>
                     </Container>
                 </div>
             )}
@@ -168,4 +222,34 @@ const Input = styled.input`
         background-color: #eeeeee;
         outline: 0;
     }
+`;
+
+const CategoryForm = styled.form``;
+
+const CategoryContainer = styled.div`
+    margin-top: 10px;
+`;
+
+const CategoryRadio = styled.input`
+    display: none;
+
+    &:checked + label {
+        color: #ffffff;
+        background-color: ${variable.primaryColor};
+        border: 1px solid ${variable.primaryColor};
+    }
+`;
+
+const CategoryLabel = styled.label`
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid ${variable.borderDefaultColor};
+    font-size: 16px;
+`;
+
+const DeleteButton = styled.div`
+    margin-top: 40px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
 `;

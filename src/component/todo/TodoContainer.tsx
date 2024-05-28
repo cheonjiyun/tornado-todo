@@ -3,7 +3,7 @@ import { TodoType } from "../../type/todo";
 
 type PropsType = {
     todo: TodoType;
-    toggleCheck: (id: number) => void;
+    toggleCheck: (id: number, urrentCompleted: boolean) => void;
     setEditOpen: () => void;
     setEditCurrentTodo: (current: TodoType) => void;
 };
@@ -17,7 +17,10 @@ export const TodoContainer = ({
     return (
         <Container>
             <TodoLeft>
-                <CheckBox $completed={todo.completed} onClick={() => toggleCheck(todo.id)}>
+                <CheckBox
+                    $completed={todo.completed}
+                    onClick={() => toggleCheck(todo.id, todo.completed)}
+                >
                     {todo.completed && (
                         <svg
                             xmlns="http://www.w3.org/2000/svg"

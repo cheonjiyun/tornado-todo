@@ -3,7 +3,7 @@ import { variable } from "../style/variable";
 import { TodoContainer } from "../component/todo/TodoContainer";
 import { useEffect, useState } from "react";
 import { TodoType } from "../type/todo";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { todosRecoil } from "../recoil/todos/atom";
 import { useRecoilState } from "recoil";
@@ -43,17 +43,15 @@ export const Todo = () => {
         fetchTodos();
     }, [todos]);
 
-    const toggleCheckTodo = (id: number) => {
-        // const newTodos = todos.map((todo) => {
-        //     if (todo.id === id) {
-        //         return {
-        //             ...todo,
-        //             completed: !todo.completed,
-        //         };
-        //     }
-        //     return todo;
-        // });
-        // setTodos(newTodos);
+    // check
+    const toggleCheckTodo = async (id: number, currentCompleted: boolean) => {
+        try {
+            await updateDoc(doc(db, "todos", `${id}`), {
+                completed: !currentCompleted,
+            });
+        } catch (e) {
+            console.log(e);
+        }
     };
 
     // edit

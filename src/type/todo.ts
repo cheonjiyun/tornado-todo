@@ -6,3 +6,8 @@ export type TodoType = {
     calendar: Date | null;
     category: string | null;
 };
+
+export type CategoryType = {
+    userEmail: string;
+    category: string;
+};
