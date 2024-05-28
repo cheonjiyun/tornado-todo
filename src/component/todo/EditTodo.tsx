@@ -4,7 +4,7 @@ import { InputLabel } from "../../style/styleComponents";
 import { useEffect, useState } from "react";
 import { CategoryType, TodoType } from "../../type/todo";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase/firebase";
 
 type PropsType = {
@@ -38,12 +38,17 @@ export const EditTodo = ({ editCurrentTodo, editOpen, setEditClose }: PropsType)
     const { register, handleSubmit, setValue } = useForm();
 
     // 처음 입력
+    const [currentCategory, setCurrentCategory] = useState<string | null>(null);
     useEffect(() => {
         setValue("text", editCurrentTodo.text);
+        setCurrentCategory(editCurrentTodo.category);
     }, [editCurrentTodo]);
 
     const user = auth.currentUser;
+
     // 카테고리 추가
+    const [categorys, setCategorys] = useState<string[]>([]);
+
     const onAddCategory = async (data) => {
         if (!user || !user.email) {
             return;
@@ -55,11 +60,41 @@ export const EditTodo = ({ editCurrentTodo, editOpen, setEditClose }: PropsType)
         };
 
         try {
-            await addDoc(collection(db, "category"), newCategory);
+            await setDoc(doc(db, "category", `${categorys.length}`), newCategory);
             setValue("category", "");
         } catch (e) {
             console.log(e);
+        } finally {
+            getCategory();
         }
+    };
+
+    // 카테고리 불러오기
+    const getCategory = async () => {
+        const snapshot = await getDocs(collection(db, "category"));
+
+        const categoryList: string[] = snapshot.docs.map((doc) => {
+            const data = doc.data();
+            return data.category;
+        });
+
+        setCategorys(categoryList);
+    };
+
+    useEffect(() => {
+        getCategory();
+    }, []);
+
+    // 카테고리 선택
+    const setCategory = async (categoryName: string) => {
+        try {
+            await updateDoc(doc(db, "todos", `${editCurrentTodo.id}`), {
+                category: categoryName,
+            });
+        } catch (e) {
+            console.log(e);
+        }
+        setCurrentCategory(categoryName);
     };
 
     // edit-삭제
@@ -125,10 +160,27 @@ export const EditTodo = ({ editCurrentTodo, editOpen, setEditClose }: PropsType)
                             />
                         </CategoryForm>
                         <CategoryContainer>
-                            <CategoryRadio id="1" type="radio" name="category" value={"집"} />
-                            <CategoryLabel htmlFor="1">집</CategoryLabel>
-                            <CategoryRadio id="2" type="radio" name="category" value={"학"} />
-                            <CategoryLabel htmlFor="2">학</CategoryLabel>
+                            {categorys.map((category, i) => {
+                                return (
+                                    <>
+                                        <CategoryRadio
+                                            id={category}
+                                            type="radio"
+                                            name="category"
+                                            value={category}
+                                            onChange={() => setCategory(category)}
+                                            checked={currentCategory === category}
+                                            key={`${category} ${i} radio`}
+                                        />
+                                        <CategoryLabel
+                                            htmlFor={category}
+                                            key={`${category} ${i} label`}
+                                        >
+                                            {category}
+                                        </CategoryLabel>
+                                    </>
+                                );
+                            })}
                         </CategoryContainer>
                         <DeleteButton onClick={() => deleteTodo(editCurrentTodo.id)}>
                             삭제
@@ -241,10 +293,12 @@ const CategoryRadio = styled.input`
 `;
 
 const CategoryLabel = styled.label`
+    margin: 6px;
     padding: 10px;
     border-radius: 6px;
     border: 1px solid ${variable.borderDefaultColor};
     font-size: 16px;
+    cursor: pointer;
 `;
 
 const DeleteButton = styled.div`

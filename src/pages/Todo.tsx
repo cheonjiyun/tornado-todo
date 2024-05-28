@@ -3,7 +3,7 @@ import { variable } from "../style/variable";
 import { TodoContainer } from "../component/todo/TodoContainer";
 import { useEffect, useState } from "react";
 import { TodoType } from "../type/todo";
-import { collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
+import { collection, doc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { todosRecoil } from "../recoil/todos/atom";
 import { useRecoilState } from "recoil";
