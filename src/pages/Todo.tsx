@@ -21,15 +21,6 @@ import { EditTodo } from "../component/todo/EditTodo";
 export const Todo = () => {
     const [todos, setTodos] = useRecoilState(todosRecoil);
 
-    // useEffect(() => {
-    //     setTodos([
-    //         { id: 1, text: "할일", completed: false },
-    //         { id: 2, text: "할일일일", completed: true },
-    //     ]);
-    // }, []);
-
-    // const [todos, setTodos] = useState<TodoType[]>([])
-
     const lastPage = useRef<number>(0);
     const isLoading = useRef(false);
 
@@ -121,7 +112,10 @@ export const Todo = () => {
             <EditTodo
                 editCurrentTodo={editCurrentTodo}
                 editOpen={editOpen}
-                setEditClose={() => setEditOpen(false)}
+                setEditClose={() => {
+                    setEditOpen(false);
+                    location.reload();
+                }}
             />
             <div id="observerTodo" style={{ height: "40px" }}></div>
         </Container>

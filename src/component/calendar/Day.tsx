@@ -3,6 +3,8 @@ import { variable } from "../../style/variable";
 import { restDates } from "../../store/restDate";
 import { getRestInfo } from "../../axios/http";
 import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { todosRecoil } from "../../recoil/todos/atom";
 
 type PropsType = {
     date: Date;
@@ -11,7 +13,7 @@ type PropsType = {
     setCalendarDate?: (calendarDate: Date) => void;
 };
 
-export const Day = ({ date, index, displayYearMonth, setCalendarDate }: PropsType) => {
+export const Day = ({ date, displayYearMonth, setCalendarDate }: PropsType) => {
     const [color, setColor] = useState("default");
 
     useEffect(() => {
@@ -24,6 +26,19 @@ export const Day = ({ date, index, displayYearMonth, setCalendarDate }: PropsTyp
         }
     }, []);
 
+    const [todos] = useRecoilState(todosRecoil);
+    const todoFilters = todos.filter((todo) => {
+        if (
+            todo.calendar?.getFullYear() === date.getFullYear() &&
+            todo.calendar.getMonth() === date.getMonth() &&
+            todo.calendar.getDate() === date.getDate()
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
     return (
         <Container
             $color={color}
@@ -34,13 +49,7 @@ export const Day = ({ date, index, displayYearMonth, setCalendarDate }: PropsTyp
         >
             <DateText>{date.getDate()}</DateText>
             <TodosDiv>
-                <TodoDiv>{"반복"}</TodoDiv>
-                <TodoDiv>{"반복"}</TodoDiv>
-                <TodoDiv>{"반복"}</TodoDiv>
-                <TodoDiv>{"반복"}</TodoDiv>
-                <TodoDiv>{"반복"}</TodoDiv>
-                <TodoDiv>{"반복"}</TodoDiv>
-                <TodoDiv>{"반복"}</TodoDiv>
+                {todoFilters && todoFilters.map((todo) => <TodoDiv>{todo.text}</TodoDiv>)}
             </TodosDiv>
         </Container>
     );
