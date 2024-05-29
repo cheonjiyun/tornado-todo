@@ -2,9 +2,12 @@ import styled from "styled-components";
 import { Week } from "../component/calendar/Week";
 import { Day } from "../component/calendar/Day";
 import { useEffect, useRef, useState } from "react";
-import { getRestInfo } from "../axios/http";
 
-export const Calendar = () => {
+type PropsType = {
+    setCalendarDate: (calendarDate: Date) => void;
+};
+
+export const Calendar = ({ setCalendarDate }: PropsType) => {
     const today = new Date();
     const todayDate = today.getDate();
 
@@ -120,6 +123,7 @@ export const Calendar = () => {
                                         date={date}
                                         key={`${date} ${i}`}
                                         index={i}
+                                        setCalendarDate={setCalendarDate}
                                     />
                                 );
                             })}

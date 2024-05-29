@@ -3,9 +3,11 @@ import { variable } from "../../style/variable";
 import { InputLabel } from "../../style/styleComponents";
 import { useEffect, useState } from "react";
 import { CategoryType, TodoType } from "../../type/todo";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { addDoc, collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from "firebase/firestore";
+import { useForm } from "react-hook-form";
+import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase/firebase";
+import { useNavigate } from "react-router-dom";
+import { Calendar } from "../../pages/Calendar";
 
 type PropsType = {
     editOpen: boolean;
@@ -41,10 +43,30 @@ export const EditTodo = ({ editCurrentTodo, editOpen, setEditClose }: PropsType)
     const [currentCategory, setCurrentCategory] = useState<string | null>(null);
     useEffect(() => {
         setValue("text", editCurrentTodo.text);
+        setValue(
+            "calendar",
+            editCurrentTodo.calendar ? editCurrentTodo.calendar.toLocaleDateString() : ""
+        );
+        console.log(editCurrentTodo);
+
         setCurrentCategory(editCurrentTodo.category);
     }, [editCurrentTodo]);
 
     const user = auth.currentUser;
+
+    // 날짜선택
+    const [calendarOpen, setCalendarOpen] = useState(false);
+    const setCalendarDate = async (calendarDate: Date) => {
+        try {
+            await updateDoc(doc(db, "todos", `${editCurrentTodo.id}`), {
+                calendar: calendarDate,
+            });
+        } catch (e) {
+            console.log(e);
+        }
+        setValue("calendar", calendarDate.toLocaleDateString());
+        setCalendarOpen(false);
+    };
 
     // 카테고리 추가
     const [categorys, setCategorys] = useState<string[]>([]);
@@ -144,7 +166,43 @@ export const EditTodo = ({ editCurrentTodo, editOpen, setEditClose }: PropsType)
                             name="text"
                         />
                         <InputLabel htmlFor="calendar">할날짜</InputLabel>
-                        <Input name="calendar" />
+                        <SelectDateContainer onClick={() => setCalendarOpen(true)}>
+                            <Input {...register("calendar")} placeholder="날짜를 선택해주세요." />
+                            <DateSelectButton>
+                                <svg
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M19 4H18V2H16V4H8V2H6V4H5C3.89 4 3.01 4.9 3.01 6L3 20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C20.1 22 21 21.1 21 20V6C21 4.9 20.1 4 19 4ZM19 20H5V10H19V20ZM9 14H7V12H9V14ZM13 14H11V12H13V14ZM17 14H15V12H17V14ZM9 18H7V16H9V18ZM13 18H11V16H13V18ZM17 18H15V16H17V18Z"
+                                        fill="#545454"
+                                    />
+                                </svg>
+                            </DateSelectButton>
+                        </SelectDateContainer>
+                        {/* <DateSelectContainer>
+                            <EachDateGroup>
+                                <EachDate>2023</EachDate>
+                                <EachDate>2024</EachDate>
+                                <EachDate>2025</EachDate>
+                                <EachDate>2023</EachDate>
+                                <EachDate>2024</EachDate>
+                                <EachDate>2025</EachDate>
+                            </EachDateGroup>
+                            <EachDateGroup>
+                                <EachDate>04</EachDate>
+                                <EachDate>05</EachDate>
+                                <EachDate>06</EachDate>
+                            </EachDateGroup>
+                            <EachDateGroup>
+                                <EachDate>16</EachDate>
+                                <EachDate>17</EachDate>
+                                <EachDate>18</EachDate>
+                            </EachDateGroup>
+                        </DateSelectContainer> */}
                         <CategoryForm
                             onSubmit={handleSubmit((data) => {
                                 onAddCategory(data);
@@ -185,6 +243,14 @@ export const EditTodo = ({ editCurrentTodo, editOpen, setEditClose }: PropsType)
                         <DeleteButton onClick={() => deleteTodo(editCurrentTodo.id)}>
                             삭제
                         </DeleteButton>
+                        {calendarOpen && (
+                            <>
+                                <ModalWhite onClick={() => setCalendarOpen(false)}></ModalWhite>
+                                <CalendarModal>
+                                    <Calendar setCalendarDate={setCalendarDate} />
+                                </CalendarModal>
+                            </>
+                        )}
                     </Container>
                 </div>
             )}
@@ -276,6 +342,91 @@ const Input = styled.input`
     }
 `;
 
+const SelectDateContainer = styled.div`
+    position: relative;
+    cursor: pointer;
+`;
+
+const DateSelectButton = styled.div`
+    position: absolute;
+    top: 2px;
+    right: 0;
+    padding: 14px;
+    font-size: 14px;
+`;
+
+const DateSelectContainer = styled.div`
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    cursor: pointer;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 7px;
+        left: 1px;
+        width: calc(100% - 2px);
+        height: 40px;
+        background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.9) 0%,
+            rgba(255, 255, 255, 0.6) 70%,
+            rgba(255, 255, 255, 0.2) 100%
+        );
+        border-radius: 6px 6px 0 0;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: 17px;
+        left: 1px;
+        width: calc(100% - 2px);
+        height: 40px;
+        background: linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.9) 0%,
+            rgba(255, 255, 255, 0.6) 70%,
+            rgba(255, 255, 255, 0.2) 100%
+        );
+        border-radius: 0 0 6px 6px;
+    }
+`;
+
+const EachDateGroup = styled.div`
+    box-sizing: border-box;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    border: 1px solid ${variable.borderDefaultColor};
+    height: 120px;
+    overflow: scroll;
+
+    &:not(:first-child) {
+        border-left: 0px solid ${variable.borderDefaultColor};
+    }
+
+    &:first-child {
+        border-radius: 6px 0 0 6px;
+    }
+    &:last-child {
+        border-radius: 0 6px 6px 0;
+    }
+
+    z-index: 1;
+`;
+
+const EachDate = styled.div`
+    padding: 10px;
+    font-size: 16px;
+`;
+
 const CategoryForm = styled.form``;
 
 const CategoryContainer = styled.div`
@@ -306,4 +457,36 @@ const DeleteButton = styled.div`
     padding: 10px;
     text-align: center;
     cursor: pointer;
+`;
+
+const ModalWhite = styled.div`
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2;
+`;
+
+const CalendarModal = styled.div`
+    box-sizing: border-box;
+    position: absolute;
+    margin: auto;
+    width: 95%;
+    height: 70%;
+    top: 50%;
+    //border: 1px solid ${variable.borderDefaultColor};
+    border-radius: 16px;
+    transform: translate(0, -50%);
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
+    overflow: scroll;
+
+    z-index: 3;
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 `;

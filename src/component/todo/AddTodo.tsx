@@ -84,7 +84,7 @@ export const AddTodo = () => {
 
         const newTodo: TodoType = {
             userEmail: user.email,
-            id: todos.length,
+            id: todos.length > 0 ? todos[todos.length - 1].id + 1 : 0,
             text: data.newtodo,
             completed: false,
             calendar: null,
@@ -92,7 +92,10 @@ export const AddTodo = () => {
         };
 
         try {
-            await setDoc(doc(db, "todos", `${todos.length}`), newTodo);
+            await setDoc(
+                doc(db, "todos", `${todos.length > 0 ? todos[todos.length - 1].id + 1 : 0}`),
+                newTodo
+            );
             setOepnRecoilState(false);
             setTodos([...todos, newTodo]);
             setValue("newtodo", "");

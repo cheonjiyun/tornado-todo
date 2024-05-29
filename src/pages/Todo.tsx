@@ -31,7 +31,7 @@ export const Todo = () => {
                 id: data.id,
                 text: data.text,
                 completed: data.completed,
-                calendar: data.calendar ? new Date(data.calendar) : null,
+                calendar: data.calendar ? data.calendar.toDate() : null,
                 category: data.category ?? null, // null 병합 연산자 사용
             };
         });

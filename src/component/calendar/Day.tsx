@@ -8,9 +8,10 @@ type PropsType = {
     date: Date;
     index: number;
     displayYearMonth: (year: number, month: number) => void;
+    setCalendarDate?: (calendarDate: Date) => void;
 };
 
-export const Day = ({ date, index, displayYearMonth }: PropsType) => {
+export const Day = ({ date, index, displayYearMonth, setCalendarDate }: PropsType) => {
     const [color, setColor] = useState("default");
 
     useEffect(() => {
@@ -29,6 +30,7 @@ export const Day = ({ date, index, displayYearMonth }: PropsType) => {
             onMouseEnter={() => {
                 displayYearMonth(+date.getFullYear(), date.getMonth() + 1);
             }}
+            onClick={() => setCalendarDate && setCalendarDate(date)}
         >
             {date.getDate()}
         </Container>
