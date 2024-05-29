@@ -4,7 +4,7 @@ import { isOpenAddTodoState } from "../../recoil/addTodo/atom";
 import { useEffect, useState } from "react";
 import { variable } from "../../style/variable";
 import { useForm } from "react-hook-form";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase/firebase";
 import { todosRecoil } from "../../recoil/todos/atom";
 import { TodoType } from "../../type/todo";
@@ -23,7 +23,7 @@ export const AddTodo = () => {
         } else {
             code = setTimeout(() => {
                 setOpen(isOpenRecoilState);
-            }, 380);
+            }, 370);
         }
 
         return () => {

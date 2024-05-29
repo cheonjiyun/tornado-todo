@@ -1,9 +1,18 @@
 import styled from "styled-components";
 import { variable } from "../style/variable";
 import { TodoContainer } from "../component/todo/TodoContainer";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TodoType } from "../type/todo";
-import { collection, doc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
+import {
+    collection,
+    doc,
+    getDocs,
+    limit,
+    orderBy,
+    query,
+    startAt,
+    updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { todosRecoil } from "../recoil/todos/atom";
 import { useRecoilState } from "recoil";
@@ -21,27 +30,57 @@ export const Todo = () => {
 
     // const [todos, setTodos] = useState<TodoType[]>([])
 
-    const fetchTodos = async () => {
-        const todoQuerys = query(collection(db, "todos"), orderBy("calendar"));
-        const snapshot = await getDocs(todoQuerys);
-        const getTodos: TodoType[] = snapshot.docs.map((doc) => {
-            const data = doc.data();
-            return {
-                userEmail: data.userEmail,
-                id: data.id,
-                text: data.text,
-                completed: data.completed,
-                calendar: data.calendar ? data.calendar.toDate() : null,
-                category: data.category ?? null, // null 병합 연산자 사용
-            };
-        });
+    const lastPage = useRef<number>(0);
+    const isLoading = useRef(false);
 
-        setTodos(getTodos);
+    const fetchTodos = async () => {
+        if (isLoading.current) return;
+
+        try {
+            isLoading.current = true;
+            const todoQuerys = query(
+                collection(db, "todos"),
+                orderBy("id"),
+                startAt(lastPage.current),
+                limit(20)
+            );
+            const snapshot = await getDocs(todoQuerys);
+
+            lastPage.current = lastPage.current + snapshot.docs.length;
+            const getTodos: TodoType[] = snapshot.docs.map((doc) => {
+                const data = doc.data();
+                return {
+                    userEmail: data.userEmail,
+                    id: data.id,
+                    text: data.text,
+                    completed: data.completed,
+                    calendar: data.calendar ? data.calendar.toDate() : null,
+                    category: data.category ?? null,
+                };
+            });
+            setTodos((todos) => [...todos, ...getTodos]);
+        } catch (e) {
+            console.log(e);
+        } finally {
+            isLoading.current = false;
+        }
     };
 
     useEffect(() => {
         fetchTodos();
-    }, [todos]);
+    }, []);
+
+    // 무한스크롤 페이지네이션
+    useEffect(() => {
+        const observerTodo = new IntersectionObserver(fetchTodos, {
+            threshold: 0,
+        });
+        const $observerTodo = document.getElementById("observerTodo");
+
+        if ($observerTodo) {
+            observerTodo.observe($observerTodo);
+        }
+    }, []);
 
     // check
     const toggleCheckTodo = async (id: number, currentCompleted: boolean) => {
@@ -84,12 +123,15 @@ export const Todo = () => {
                 editOpen={editOpen}
                 setEditClose={() => setEditOpen(false)}
             />
+            <div id="observerTodo" style={{ height: "40px" }}></div>
         </Container>
     );
 };
 
 const Container = styled.div`
     width: 100%;
+    height: 100vh;
+    overflow: scroll;
 `;
 const Title = styled.div`
     padding: 16px;

@@ -6,7 +6,6 @@ import { CategoryType, TodoType } from "../../type/todo";
 import { useForm } from "react-hook-form";
 import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase/firebase";
-import { useNavigate } from "react-router-dom";
 import { Calendar } from "../../pages/Calendar";
 
 type PropsType = {
@@ -47,7 +46,6 @@ export const EditTodo = ({ editCurrentTodo, editOpen, setEditClose }: PropsType)
             "calendar",
             editCurrentTodo.calendar ? editCurrentTodo.calendar.toLocaleDateString() : ""
         );
-        console.log(editCurrentTodo);
 
         setCurrentCategory(editCurrentTodo.category);
     }, [editCurrentTodo]);

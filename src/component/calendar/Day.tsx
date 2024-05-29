@@ -32,7 +32,16 @@ export const Day = ({ date, index, displayYearMonth, setCalendarDate }: PropsTyp
             }}
             onClick={() => setCalendarDate && setCalendarDate(date)}
         >
-            {date.getDate()}
+            <DateText>{date.getDate()}</DateText>
+            <TodosDiv>
+                <TodoDiv>{"반복"}</TodoDiv>
+                <TodoDiv>{"반복"}</TodoDiv>
+                <TodoDiv>{"반복"}</TodoDiv>
+                <TodoDiv>{"반복"}</TodoDiv>
+                <TodoDiv>{"반복"}</TodoDiv>
+                <TodoDiv>{"반복"}</TodoDiv>
+                <TodoDiv>{"반복"}</TodoDiv>
+            </TodosDiv>
         </Container>
     );
 };
@@ -49,11 +58,28 @@ type PropsColor = {
 
 const Container = styled.div<PropsColor>`
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     flex: 1;
     height: 100%;
-    padding-top: 10px;
     color: ${(props) => colorVal[props.$color]};
+`;
+
+const DateText = styled.div`
+    padding: 6px;
+    text-align: center;
+`;
+
+const TodosDiv = styled.div`
+    overflow: scroll;
+`;
+
+const TodoDiv = styled.div`
+    margin: 2px;
+    color: #ffffff;
+    font-weight: 300;
+    background-color: ${variable.primaryColor};
+    padding: 6px;
+    border-radius: 6px;
 `;
 
 const isRest = (date: Date) => {
