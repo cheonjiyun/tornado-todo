@@ -80,6 +80,11 @@ const DateText = styled.div`
 
 const TodosDiv = styled.div`
     overflow: scroll;
+
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 `;
 
 const TodoDiv = styled.div`
